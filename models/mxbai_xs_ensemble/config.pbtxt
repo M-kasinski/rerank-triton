@@ -1,6 +1,6 @@
 name: "mxbai_xs_ensemble"
 platform: "ensemble"
-max_batch_size: 0
+max_batch_size: 512
 
 input [
   { name: "QUERY",     data_type: TYPE_STRING, dims: [1] },
@@ -9,7 +9,7 @@ input [
 ]
 
 output [
-  { name: "scores",  data_type: TYPE_FP32, dims: [-1, 1] },
+  { name: "scores",  data_type: TYPE_FP32, dims: [-1] },
   { name: "indices", data_type: TYPE_INT64, dims: [-1] }
 ]
 

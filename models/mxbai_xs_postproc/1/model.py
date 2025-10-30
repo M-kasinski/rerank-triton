@@ -25,8 +25,8 @@ class TritonPythonModel:
             flat_scores = scores.reshape(-1)
             indices = np.argsort(flat_scores)[::-1][:top_n]
 
-            top_scores = flat_scores[indices][:, np.newaxis].astype(np.float32)
-            top_indices = indices.astype(np.int64)
+            top_scores = np.ascontiguousarray(flat_scores[indices].astype(np.float32))
+            top_indices = np.ascontiguousarray(indices.astype(np.int64))
 
             score_tensor = pb.Tensor("scores", top_scores)
             index_tensor = pb.Tensor("indices", top_indices)

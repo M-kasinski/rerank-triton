@@ -1,6 +1,6 @@
 name: "mxbai_xs_preproc"
 backend: "python"
-max_batch_size: 0
+max_batch_size: 512
 
 input [
   { name: "QUERY",     data_type: TYPE_STRING, dims: [1] },
@@ -8,8 +8,13 @@ input [
 ]
 
 output [
-  { name: "input_ids",      data_type: TYPE_INT64, dims: [-1, 512] },
-  { name: "attention_mask", data_type: TYPE_INT64, dims: [-1, 512] }
+  { name: "input_ids",      data_type: TYPE_INT64, dims: [512] },
+  { name: "attention_mask", data_type: TYPE_INT64, dims: [512] }
 ]
 
 instance_group [{ kind: KIND_CPU, count: 1 }]
+
+dynamic_batching {
+  preferred_batch_size: [16, 32, 64, 128, 256, 512]
+  max_queue_delay_microseconds: 2000
+}

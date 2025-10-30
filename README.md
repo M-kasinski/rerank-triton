@@ -64,7 +64,12 @@ curl -s -X POST localhost:8000/v2/models/mxbai_xs_ensemble/infer \
   }' | jq .
 ```
 
-Les scores renvoyés correspondent à la probabilité normalisée (sigmoïde). Le tenseur `indices` contient les positions d'origine des documents triés par score décroissant (ici, les deux meilleurs).
+Les scores renvoyés correspondent à la probabilité normalisée (sigmoïde). Le tenseur `indices` contient les positions d'origine des documents triés par score décroissant (ici, les deux meilleurs). Les tensors de sortie incluent désormais une première dimension de taille 1 (batch implicite de Triton) : `scores.shape = [1, TOP_N]`, `indices.shape = [1, TOP_N]`. Il suffit de sélectionner l'axe zéro pour retrouver la liste plate.
+
+### Batching & perfs
+
+- Le dépôt est configuré avec `max_batch_size = 512` sur l'ensemble du pipeline. Chaque requête peut donc contenir jusqu'à 512 documents, et Triton peut regrouper plusieurs requêtes simultanées.
+- Le backend ONNX fonctionne en FP32 mais exploite CUDA pour paralléliser les traitements. Pour tirer parti du batching, on peut envoyer plusieurs requêtes en parallèle (ou augmenter le nombre de documents par requête) : Triton empile les couples (requête, document) le long de la dimension batch avant de lancer l'inférence.
 
 ## Publication continue sur GHCR
 

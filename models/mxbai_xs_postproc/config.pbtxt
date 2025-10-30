@@ -7,7 +7,7 @@ input [
   { name: "top_n",   data_type: TYPE_INT32, dims: [1] }
 ]
 output [
-  { name: "scores",  data_type: TYPE_FP32, dims: [-1, 1] },
+  { name: "scores",  data_type: TYPE_FP32, dims: [-1] },
   { name: "indices", data_type: TYPE_INT64, dims: [-1] }
 ]
 

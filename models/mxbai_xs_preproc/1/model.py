@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import List
 
@@ -14,6 +15,8 @@ class TritonPythonModel:
             raise RuntimeError(f"Assets directory not found: {assets_dir}")
         self.tokenizer = AutoTokenizer.from_pretrained(str(assets_dir), use_fast=True)
         self.max_length = 512
+        config = json.loads(args.get("model_config", "{}"))
+        self.max_batch_size = int(config.get("max_batch_size", 0) or 1)
 
     def _decode_string_tensor(self, tensor: np.ndarray) -> List[str]:
         flat = tensor.reshape(-1)
@@ -50,8 +53,13 @@ class TritonPythonModel:
                 return_tensors="np",
             )
 
-            input_ids = encodings["input_ids"].astype(np.int64)
-            attention_mask = encodings["attention_mask"].astype(np.int64)
+            input_ids = np.ascontiguousarray(encodings["input_ids"].astype(np.int64))
+            attention_mask = np.ascontiguousarray(encodings["attention_mask"].astype(np.int64))
+
+            if input_ids.shape[0] > self.max_batch_size:
+                raise ValueError(
+                    f"Number of document pairs ({input_ids.shape[0]}) exceeds max_batch_size={self.max_batch_size}"
+                )
 
             outputs = [
                 pb.Tensor("input_ids", input_ids),
