@@ -32,14 +32,16 @@ docker build -t mxbai-triton:xs .
 
 ## Exécution du serveur Triton
 
-Lancez l'image en exposant les ports d'API HTTP/GRPC/metrics. Le pipeline tourne intégralement sur CPU, l'utilisation d'un GPU est optionnelle.
+Le modèle ONNX est configuré pour tourner sur GPU (CUDA). Assurez-vous de monter une carte compatible (A10, L40S, H100...) et de passer l'accès GPU au conteneur, faute de quoi Triton refusera de charger le modèle.
 
 ```bash
 docker run --rm \
+  --gpus all \
   -p 8000:8000 -p 8001:8001 -p 8002:8002 \
   mxbai-triton:xs
-# Ajoutez "--gpus all" si vous souhaitez déléguer l'ONNX Runtime au GPU.
 ```
+
+> ℹ️ Les étapes de pré/post-traitement restent en Python sur CPU, seule l'inférence ONNX consomme le GPU.
 
 ## Vérifications et requêtes d'inférence
 
