@@ -55,15 +55,16 @@ curl -s -X POST localhost:8000/v2/models/mxbai_xs_ensemble/infer \
   -H "Content-Type: application/json" \
   -d '{
     "inputs":[
-      {"name":"QUERY","datatype":"STRING","shape":[1,1],"data":["python async http client"]},
-      {"name":"DOCUMENTS","datatype":"STRING","shape":[1,3],
-       "data":["doc A ...","doc B ...","doc C ..."]}
+      {"name":"QUERY","datatype":"STRING","shape":[1],"data":["python async http client"]},
+      {"name":"DOCUMENTS","datatype":"STRING","shape":[3],
+       "data":["doc A ...","doc B ...","doc C ..."]},
+      {"name":"TOP_N","datatype":"INT32","shape":[1],"data":[2]}
     ],
-    "outputs":[{"name":"scores"}]
+    "outputs":[{"name":"scores"},{"name":"indices"}]
   }' | jq .
 ```
 
-Les scores renvoyés correspondent à la probabilité normalisée (sigmoïde) pour chaque document fourni.
+Les scores renvoyés correspondent à la probabilité normalisée (sigmoïde). Le tenseur `indices` contient les positions d'origine des documents triés par score décroissant (ici, les deux meilleurs).
 
 ## Publication continue sur GHCR
 

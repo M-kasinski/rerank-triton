@@ -1,6 +1,6 @@
 name: "mxbai_xs_preproc"
 backend: "python"
-max_batch_size: 32
+max_batch_size: 0
 
 input [
   { name: "QUERY",     data_type: TYPE_STRING, dims: [1] },
@@ -13,8 +13,3 @@ output [
 ]
 
 instance_group [{ kind: KIND_CPU, count: 1 }]
-
-dynamic_batching {
-  preferred_batch_size: [4, 8, 16]
-  max_queue_delay_microseconds: 2000
-}
