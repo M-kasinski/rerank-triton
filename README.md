@@ -32,12 +32,13 @@ docker build -t mxbai-triton:xs .
 
 ## Exécution du serveur Triton
 
-Lancez l'image en exposant les ports d'API HTTP/GRPC/metrics. L'exemple suivant suppose un GPU NVIDIA disponible et accessible.
+Lancez l'image en exposant les ports d'API HTTP/GRPC/metrics. Le pipeline tourne intégralement sur CPU, l'utilisation d'un GPU est optionnelle.
 
 ```bash
-docker run --gpus all --rm \
+docker run --rm \
   -p 8000:8000 -p 8001:8001 -p 8002:8002 \
   mxbai-triton:xs
+# Ajoutez "--gpus all" si vous souhaitez déléguer l'ONNX Runtime au GPU.
 ```
 
 ## Vérifications et requêtes d'inférence
@@ -64,7 +65,7 @@ Les scores renvoyés correspondent à la probabilité normalisée (sigmoïde) po
 
 ## Publication continue sur GHCR
 
-Un workflow GitHub Actions (`.github/workflows/docker-image.yml`) construit l'image Docker à chaque push et pull request. Lors d'un push sur une branche, l'image est taggée automatiquement avec :
+Un workflow GitHub Actions (`.github/workflows/docker-image.yml`) construit l'image Docker à chaque `push` (et sur déclenchement manuel). Lors d'un push sur une branche, l'image est taggée automatiquement avec :
 
 - le nom de la branche (`feature-x` → `ghcr.io/<repo>:feature-x`),
 - le couple branche + hash court (`ghcr.io/<repo>:feature-x-<sha>`),
@@ -72,4 +73,4 @@ Un workflow GitHub Actions (`.github/workflows/docker-image.yml`) construit l'im
 
 Si un fichier `VERSION` est présent à la racine du dépôt, sa valeur est également injectée dans les tags pour la branche courante (`feature-x-1.2.3`). Sur `main`, le tag `1.2.3` est publié en plus de `latest`.
 
-Les images ne sont poussées que pour les événements hors pull request (pour les PR, la construction est réalisée sans push). Les caches de compilation sont mutualisés grâce à `cache-from/cache-to` afin d'accélérer les builds successifs.
+Les images ne sont poussées que pour les événements `push`. Les caches de compilation sont mutualisés grâce à `cache-from/cache-to` afin d'accélérer les builds successifs.
