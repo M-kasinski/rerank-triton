@@ -2,9 +2,10 @@
 set -euo pipefail
 
 TARGET="${1:-/models}"
-ASSETS_DIR="${TARGET}/mxbai_assets"
+ASSETS_DIR="${TARGET}/mxbai_xs_preproc/1/assets"
 ORT_MODEL_DIR="${TARGET}/mxbai_xs_ort/1"
 
+rm -rf "${TARGET}/mxbai_assets" "${ASSETS_DIR}"
 mkdir -p "${ASSETS_DIR}" "${ORT_MODEL_DIR}"
 
 ASSETS_DIR="${ASSETS_DIR}" ORT_MODEL_DIR="${ORT_MODEL_DIR}" python3 - <<'PY'

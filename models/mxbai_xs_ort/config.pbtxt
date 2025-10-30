@@ -21,4 +21,4 @@ optimization {
   }
 }
 
-model_filename: "model.onnx"
+default_model_filename: "model.onnx"

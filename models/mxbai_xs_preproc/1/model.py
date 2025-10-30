@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from typing import List
 
 import numpy as np
@@ -8,16 +8,22 @@ import triton_python_backend_utils as pb
 
 class TritonPythonModel:
     def initialize(self, args):
-        model_repository = args["model_repository"]
-        assets_dir = os.path.join(model_repository, "mxbai_assets")
-        if not os.path.isdir(assets_dir):
+        model_dir = Path(__file__).parent
+        assets_dir = model_dir / "assets"
+        if not assets_dir.is_dir():
             raise RuntimeError(f"Assets directory not found: {assets_dir}")
-        self.tokenizer = AutoTokenizer.from_pretrained(assets_dir, use_fast=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(str(assets_dir), use_fast=True)
         self.max_length = 512
 
-    def _decode_bytes_tensor(self, tensor: np.ndarray) -> List[str]:
+    def _decode_string_tensor(self, tensor: np.ndarray) -> List[str]:
         flat = tensor.reshape(-1)
-        return [item.decode("utf-8") for item in flat]
+        decoded: List[str] = []
+        for item in flat:
+            if isinstance(item, bytes):
+                decoded.append(item.decode("utf-8"))
+            else:
+                decoded.append(str(item))
+        return decoded
 
     def execute(self, requests):
         responses = []
@@ -25,8 +31,8 @@ class TritonPythonModel:
             query_tensor = pb.get_input_tensor_by_name(request, "QUERY").as_numpy()
             documents_tensor = pb.get_input_tensor_by_name(request, "DOCUMENTS").as_numpy()
 
-            queries = self._decode_bytes_tensor(query_tensor)
-            documents = self._decode_bytes_tensor(documents_tensor)
+            queries = self._decode_string_tensor(query_tensor)
+            documents = self._decode_string_tensor(documents_tensor)
 
             if len(queries) != 1:
                 raise ValueError("Expected exactly one query per request")

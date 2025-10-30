@@ -3,8 +3,8 @@ platform: "ensemble"
 max_batch_size: 32
 
 input [
-  { name: "QUERY",     data_type: TYPE_BYTES, dims: [1] },
-  { name: "DOCUMENTS", data_type: TYPE_BYTES, dims: [-1] }
+  { name: "QUERY",     data_type: TYPE_STRING, dims: [1] },
+  { name: "DOCUMENTS", data_type: TYPE_STRING, dims: [-1] }
 ]
 
 output [ { name: "scores", data_type: TYPE_FP32, dims: [-1, 1] } ]

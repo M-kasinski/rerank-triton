@@ -55,8 +55,8 @@ curl -s -X POST localhost:8000/v2/models/mxbai_xs_ensemble/infer \
   -H "Content-Type: application/json" \
   -d '{
     "inputs":[
-      {"name":"QUERY","datatype":"BYTES","shape":[1,1],"data":["python async http client"]},
-      {"name":"DOCUMENTS","datatype":"BYTES","shape":[1,3],
+      {"name":"QUERY","datatype":"STRING","shape":[1,1],"data":["python async http client"]},
+      {"name":"DOCUMENTS","datatype":"STRING","shape":[1,3],
        "data":["doc A ...","doc B ...","doc C ..."]}
     ],
     "outputs":[{"name":"scores"}]
