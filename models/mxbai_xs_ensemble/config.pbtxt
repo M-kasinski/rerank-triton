@@ -16,25 +16,11 @@ output [
 ensemble_scheduling {
   step [
     {
-      model_name: "mxbai_xs_preproc"
+      model_name: "mxbai_xs_hf"
       model_version: 1
       input_map  { key: "QUERY"     value: "QUERY" }
       input_map  { key: "DOCUMENTS" value: "DOCUMENTS" }
-      output_map { key: "input_ids"      value: "input_ids" }
-      output_map { key: "attention_mask" value: "attention_mask" }
-    },
-    {
-      model_name: "mxbai_xs_ort"
-      model_version: 1
-      input_map  { key: "input_ids"      value: "input_ids" }
-      input_map  { key: "attention_mask" value: "attention_mask" }
-      output_map { key: "logits" value: "logits" }
-    },
-    {
-      model_name: "mxbai_xs_postproc"
-      model_version: 1
-      input_map  { key: "logits" value: "logits" }
-      input_map  { key: "top_n" value: "TOP_N" }
+      input_map  { key: "TOP_N"     value: "TOP_N" }
       output_map { key: "scores" value: "scores" }
       output_map { key: "indices" value: "indices" }
     }
