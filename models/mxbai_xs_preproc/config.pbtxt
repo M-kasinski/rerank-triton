@@ -1,0 +1,20 @@
+name: "mxbai_xs_preproc"
+backend: "python"
+max_batch_size: 32
+
+input [
+  { name: "QUERY",     data_type: TYPE_BYTES, dims: [1] },
+  { name: "DOCUMENTS", data_type: TYPE_BYTES, dims: [-1] }
+]
+
+output [
+  { name: "input_ids",      data_type: TYPE_INT64, dims: [-1, 512] },
+  { name: "attention_mask", data_type: TYPE_INT64, dims: [-1, 512] }
+]
+
+instance_group [{ kind: KIND_GPU, count: 1 }]
+
+dynamic_batching {
+  preferred_batch_size: [4, 8, 16]
+  max_queue_delay_microseconds: 2000
+}
