@@ -15,6 +15,6 @@ output [
 instance_group [{ kind: KIND_CPU, count: 1 }]
 
 dynamic_batching {
-  preferred_batch_size: [16, 32, 64, 128, 256, 512]
+  preferred_batch_size: [4, 8, 16, 32]
   max_queue_delay_microseconds: 2000
 }
