@@ -1,0 +1,42 @@
+name: "mxbai_xs_ensemble"
+platform: "ensemble"
+max_batch_size: 512
+
+input [
+  { name: "QUERY",     data_type: TYPE_STRING, dims: [1] },
+  { name: "DOCUMENTS", data_type: TYPE_STRING, dims: [-1] },
+  { name: "TOP_N",     data_type: TYPE_INT32,  dims: [1] }
+]
+
+output [
+  { name: "scores",  data_type: TYPE_FP32, dims: [-1] },
+  { name: "indices", data_type: TYPE_INT64, dims: [-1] }
+]
+
+ensemble_scheduling {
+  step [
+    {
+      model_name: "mxbai_xs_preproc"
+      model_version: 1
+      input_map  { key: "QUERY"     value: "QUERY" }
+      input_map  { key: "DOCUMENTS" value: "DOCUMENTS" }
+      output_map { key: "input_ids" value: "preproc_input_ids" }
+      output_map { key: "attention_mask" value: "preproc_attention_mask" }
+    },
+    {
+      model_name: "mxbai_xs_ort"
+      model_version: 1
+      input_map  { key: "input_ids" value: "preproc_input_ids" }
+      input_map  { key: "attention_mask" value: "preproc_attention_mask" }
+      output_map { key: "logits" value: "encoder_logits" }
+    },
+    {
+      model_name: "mxbai_xs_postproc"
+      model_version: 1
+      input_map  { key: "logits" value: "encoder_logits" }
+      input_map  { key: "top_n" value: "TOP_N" }
+      output_map { key: "scores" value: "scores" }
+      output_map { key: "indices" value: "indices" }
+    }
+  ]
+}
